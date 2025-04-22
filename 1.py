@@ -1,4 +1,3 @@
-import pandas as pd
 import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
@@ -31,7 +30,6 @@ plt.show()
 
 # Step 4: Identify outliers using the IQR method
 print("Outliers Detection:")
-outliers_summary = {}
 for feature in numerical_features:
     Q1 = housing_df[feature].quantile(0.25)
     Q3 = housing_df[feature].quantile(0.75)
@@ -39,7 +37,6 @@ for feature in numerical_features:
     lower_bound = Q1 - 1.5 * IQR
     upper_bound = Q3 + 1.5 * IQR
     outliers = housing_df[(housing_df[feature] < lower_bound) | (housing_df[feature] > upper_bound)]
-    outliers_summary[feature] = len(outliers)
     print(f"{feature}: {len(outliers)} outliers")
 
 # Optional: Print a summary of the dataset
