@@ -4,34 +4,44 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 from sklearn.datasets import fetch_california_housing
 
-# Load data
-df = fetch_california_housing(as_frame=True).frame
-num_cols = df.select_dtypes(include=np.number).columns
+# Step 1: Load the California Housing dataset
+data = fetch_california_housing(as_frame=True)
+housing_df = data.frame  # Correct way to get the DataFrame
 
-# Histograms
-df[num_cols].hist(bins=30, figsize=(15, 10), layout=(3, 3), color='skyblue', edgecolor='black')
-plt.suptitle("Histograms of Numerical Features", fontsize=16)
-plt.tight_layout()
-plt.show()
+# Step 2: Create histograms for numerical features
+numerical_features = housing_df.select_dtypes(include=[np.number]).columns
 
-# Box plots
+# Plot histograms
 plt.figure(figsize=(15, 10))
-for i, col in enumerate(num_cols):
+for i, feature in enumerate(numerical_features):
     plt.subplot(3, 3, i + 1)
-    sns.boxplot(x=df[col], color='orange')
-    plt.title(f'Box Plot of {col}')
+    sns.histplot(housing_df[feature], kde=True, bins=30, color='blue')
+    plt.title(f'Distribution of {feature}')
 plt.tight_layout()
 plt.show()
 
-# Outlier detection
-print("Outliers Detection:")
-for col in num_cols:
-    Q1, Q3 = df[col].quantile([0.25, 0.75])
-    IQR = Q3 - Q1
-    lower, upper = Q1 - 1.5 * IQR, Q3 + 1.5 * IQR
-    outliers = df[(df[col] < lower) | (df[col] > upper)]
-    print(f"{col}: {len(outliers)} outliers")
+# Step 3: Generate box plots for numerical features
+plt.figure(figsize=(15, 10))
+for i, feature in enumerate(numerical_features):
+    plt.subplot(3, 3, i + 1)
+    sns.boxplot(x=housing_df[feature], color='orange')
+    plt.title(f'Box Plot of {feature}')
+plt.tight_layout()
+plt.show()
 
-# Summary
+# Step 4: Identify outliers using the IQR method
+print("Outliers Detection:")
+outliers_summary = {}
+for feature in numerical_features:
+    Q1 = housing_df[feature].quantile(0.25)
+    Q3 = housing_df[feature].quantile(0.75)
+    IQR = Q3 - Q1
+    lower_bound = Q1 - 1.5 * IQR
+    upper_bound = Q3 + 1.5 * IQR
+    outliers = housing_df[(housing_df[feature] < lower_bound) | (housing_df[feature] > upper_bound)]
+    outliers_summary[feature] = len(outliers)
+    print(f"{feature}: {len(outliers)} outliers")
+
+# Optional: Print a summary of the dataset
 print("\nDataset Summary:")
-print(df.describe())
+print(housing_df.describe())
